@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block title %}Informasi Model - Advertising Sales Predictor{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-cogs me-3"></i>
+                    Informasi Model
+                </h1>
+                <p class="lead">
+                    Detail tentang model Linear Regression yang digunakan untuk prediksi sales
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Model Information Section -->
+<section class="py-5">
+    <div class="container">
+        {% if error %}
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {{ error }}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        
+        <!-- Model Equation -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-function me-2"></i>
+                            Persamaan Regresi
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h3 class="text-primary mb-3">Model Linear Regression</h3>
+                            <div class="bg-light p-4 rounded">
+                                <code class="fs-5">{{ model_data.equation }}</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Coefficients -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Koefisien Model
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="text-center p-3 border rounded mb-3">
+                                    <h5 class="text-primary">Intercept</h5>
+                                    <h3 class="fw-bold">{{ model_data.intercept }}</h3>
+                                    <small class="text-muted">Base sales tanpa iklan</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-center p-3 border rounded mb-3">
+                                    <h5 class="text-success">R² Score</h5>
+                                    <h3 class="fw-bold">89.7%</h3>
+                                    <small class="text-muted">Akurasi model</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <h5 class="mb-3">Koefisien untuk Setiap Media:</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="fas fa-tv text-primary fa-2x mb-2"></i>
+                                        <h6>TV Advertising</h6>
+                                        <h4 class="text-primary">{{ model_data.coefficients.TV }}</h4>
+                                        <small class="text-muted">Per $1000 iklan TV</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="fas fa-broadcast-tower text-success fa-2x mb-2"></i>
+                                        <h6>Radio Advertising</h6>
+                                        <h4 class="text-success">{{ model_data.coefficients.Radio }}</h4>
+                                        <small class="text-muted">Per $1000 iklan Radio</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="fas fa-newspaper text-warning fa-2x mb-2"></i>
+                                        <h6>Newspaper Advertising</h6>
+                                        <h4 class="text-warning">{{ model_data.coefficients.Newspaper }}</h4>
+                                        <small class="text-muted">Per $1000 iklan Newspaper</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Grafik Koefisien Model -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="chart-container">
+                                    <canvas id="coefficientsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Performance -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Performa Model
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h5 class="text-info">MAE</h5>
+                                    <h4 class="fw-bold">1.37</h4>
+                                    <small class="text-muted">Mean Absolute Error</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h5 class="text-info">MSE</h5>
+                                    <h4 class="fw-bold">2.87</h4>
+                                    <small class="text-muted">Mean Squared Error</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h5 class="text-info">RMSE</h5>
+                                    <h4 class="fw-bold">1.69</h4>
+                                    <small class="text-muted">Root Mean Square Error</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h5 class="text-info">R²</h5>
+                                    <h4 class="fw-bold">89.7%</h4>
+                                    <small class="text-muted">Coefficient of Determination</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h5 class="text-info">Data Points</h5>
+                                    <h4 class="fw-bold">200</h4>
+                                    <small class="text-muted">Training samples</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="text-center p-3 border rounded">
+                                    <h5 class="text-info">Model Type</h5>
+                                    <h4 class="fw-bold">Linear Regression</h4>
+                                    <small class="text-muted">Machine Learning Algorithm</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Visualization -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-chart-area me-2"></i>
+                            Visualisasi Data dan Hubungan Antar Variabel
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <img src="/pairplot" alt="Pairplot: Hubungan Antar Variabel" class="img-fluid rounded shadow" style="max-height: 650px; width: 100%; object-fit: contain;" />
+                            <div class="text-center mt-3">
+                                <p class="text-muted">
+                                    Gambar pairplot statik menampilkan sebaran dan korelasi antar variabel. TV vs Sales menunjukkan korelasi positif terkuat.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Performance Visualization -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-chart-scatter me-2"></i>
+                            Visualisasi Performa Model
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="actualVsPredictedChart"></canvas>
+                        </div>
+                        <div class="text-center mt-3">
+                            <p class="text-muted">
+                                <strong>Interpretasi:</strong> Titik-titik yang mendekati garis merah menunjukkan prediksi yang akurat. 
+                                Semakin dekat titik dengan garis, semakin baik performa model.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interpretation -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            Interpretasi Model
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Insights Positif:</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i>Radio memiliki dampak terbesar (0.1096 per $1000)</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>TV juga memberikan kontribusi positif (0.0549 per $1000)</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Model memiliki akurasi tinggi (89.7% R²)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-warning">Catatan Penting:</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>Newspaper memiliki koefisien negatif</li>
+                                    <li><i class="fas fa-info-circle text-info me-2"></i>Base sales tanpa iklan: {{ model_data.intercept }} unit</li>
+                                    <li><i class="fas fa-info-circle text-info me-2"></i>Model cocok untuk prediksi jangka pendek</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Prediction -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-lg-6 text-center">
+                <a href="/" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Kembali ke Prediksi
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    {% if model_data %}
+    // Grafik Koefisien Model (Bar Chart)
+    const coefficientsCtx = document.getElementById('coefficientsChart').getContext('2d');
+    new Chart(coefficientsCtx, {
+        type: 'bar',
+        data: {
+            labels: ['TV', 'Radio', 'Newspaper'],
+            datasets: [{
+                label: 'Koefisien Model',
+                data: [
+                    {{ model_data.coefficients.TV }},
+                    {{ model_data.coefficients.Radio }},
+                    {{ model_data.coefficients.Newspaper }}
+                ],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(255, 206, 86, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Koefisien Model Linear Regression'
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Koefisien'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Media Advertising'
+                    }
+                }
+            }
+        }
+    });
+
+    // Pairplot statik ditampilkan sebagai <img> dari endpoint /pairplot, tidak memerlukan JS
+
+    // Grafik Sales Aktual vs Prediksi (Scatter Plot)
+    {% if model_data.y_test and model_data.predictions %}
+    const actualVsPredictedCtx = document.getElementById('actualVsPredictedChart').getContext('2d');
+    
+    // Data untuk scatter plot
+    const yTest = {{ model_data.y_test | safe }};
+    const predictions = {{ model_data.predictions | safe }};
+    
+    // Menghitung min dan max untuk garis ideal
+    const minValue = Math.min(...yTest, ...predictions);
+    const maxValue = Math.max(...yTest, ...predictions);
+    
+    new Chart(actualVsPredictedCtx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Data Points',
+                data: yTest.map((actual, index) => ({
+                    x: actual,
+                    y: predictions[index]
+                })),
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }, {
+                label: 'Garis Ideal (y = x)',
+                data: [
+                    { x: minValue, y: minValue },
+                    { x: maxValue, y: maxValue }
+                ],
+                type: 'line',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderWidth: 2,
+                fill: false,
+                pointRadius: 0,
+                tension: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Sales Aktual vs. Sales Prediksi'
+                },
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Sales Aktual (y_test)'
+                    },
+                    min: minValue,
+                    max: maxValue
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Sales Prediksi (predictions)'
+                    },
+                    min: minValue,
+                    max: maxValue
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'point'
+            }
+        }
+    });
+    {% endif %}
+    {% endif %}
+</script>
+{% endblock %}
